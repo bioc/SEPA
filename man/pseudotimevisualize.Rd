@@ -4,7 +4,7 @@
 \alias{pseudotimevisualize}
 \title{pseudotimevisualize}
 \usage{
-pseudotimevisualize(pattern, gene, showtrue = FALSE)
+pseudotimevisualize(pattern, gene, showtrue = F)
 }
 \arguments{
 \item{pattern}{The exact output of the pseudotimepattern function.}

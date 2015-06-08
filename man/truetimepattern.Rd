@@ -4,7 +4,7 @@
 \alias{truetimepattern}
 \title{truetimepattern}
 \usage{
-truetimepattern(expr, truetime, simplify = TRUE, removeconstant = FALSE)
+truetimepattern(expr, truetime, simplify = T, removeconstant = F)
 }
 \arguments{
 \item{expr}{The matrix of gene expression profile.}

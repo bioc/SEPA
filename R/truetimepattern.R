@@ -16,22 +16,16 @@
 #' data(HSMMdata)
 #' truetimepattern(HSMMdata,truetime)
 
-truetimepattern <- function(expr,truetime,simplify=TRUE,removeconstant=FALSE) {
+truetimepattern <- function(expr,truetime,simplify=T,removeconstant=F) {
       tmp <- truetime[,2]
       names(tmp) <- truetime[,1]
-      truetime <- factor(tmp,levels=unique(tmp))      
-      apply(expr[,names(truetime)], 1, function(e) {
+      truetime <- factor(tmp)      
+      apply(expr, 1, function(e) {
             if (sum(expr) == 0) {
                   "zero"
             } else {
                   ttestpval <- sapply(1:(length(levels(truetime))-1), function(i) {
-                        e1 <- e[truetime==levels(truetime)[i]]
-                        e2 <- e[truetime==levels(truetime)[i+1]]
-                        if (length(unique(e1))==1 && length(unique(e2))==1) {
-                              1
-                        } else {
-                              sign(mean(e1)-mean(e2))*t.test(e1,e2)$p.value                  
-                        } 
+                        sign(mean(e[truetime==levels(truetime)[i]])-mean(e[truetime==levels(truetime)[i+1]]))*t.test(e[truetime==levels(truetime)[i]],e[truetime==levels(truetime)[i+1]])$p.value            
                   })      
                   ttestpval <- sign(ttestpval) * p.adjust(abs(ttestpval),method="fdr")
                   pattern <- rep("constant",length(levels(truetime))-1)
@@ -49,3 +43,4 @@ truetimepattern <- function(expr,truetime,simplify=TRUE,removeconstant=FALSE) {
             }
       })   
 }
+

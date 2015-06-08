@@ -6,9 +6,6 @@
 \usage{
 SEPAui()
 }
-\value{
-A user interface will be displayed in the web browser.
-}
 \description{
 Launch the SEPA user interface in local machine
 }

@@ -4,8 +4,8 @@
 \alias{pseudotimepattern}
 \title{pseudotimepattern}
 \usage{
-pseudotimepattern(expr, pseudotime, simplify = TRUE, removeconstant = FALSE,
-  plot = FALSE, gap = 10)
+pseudotimepattern(expr, pseudotime, simplify = T, removeconstant = F,
+  plot = F, gap = 10)
 }
 \arguments{
 \item{expr}{The matrix of gene expression profile.}

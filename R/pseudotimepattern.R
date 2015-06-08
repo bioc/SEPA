@@ -21,7 +21,7 @@
 #' data(HSMMdata)
 #' pseudotimepattern(HSMMdata,pseudotime)
 
-pseudotimepattern <- function(expr,pseudotime,simplify=TRUE,removeconstant=FALSE,plot=FALSE,gap=10) {
+pseudotimepattern <- function(expr,pseudotime,simplify=T,removeconstant=F,plot=F,gap=10) {
       # presettings
       fastRSS <- function(X, y) {
             XtX <- crossprod(X)
@@ -67,7 +67,7 @@ pseudotimepattern <- function(expr,pseudotime,simplify=TRUE,removeconstant=FALSE
             })            
             which.min(RSS1)
       }) 
-      pattern <- data.frame(pattern=rep("constant",length(transgene)),transpoint=rep(0,length(transgene)),LCI=rep(0,length(transgene)),UCI=rep(0,length(transgene)),stringsAsFactors = FALSE)      
+      pattern <- data.frame(pattern=rep("constant",length(transgene)),transpoint=rep(0,length(transgene)),LCI=rep(0,length(transgene)),UCI=rep(0,length(transgene)),stringsAsFactors = F)      
       row.names(pattern) <- transgene
       print("Fitting segmented regression models")
       for (i in 1:length(transgene)) {
@@ -82,10 +82,15 @@ pseudotimepattern <- function(expr,pseudotime,simplify=TRUE,removeconstant=FALSE
                   notransgene <- c(notransgene,transgene[i])
             } else {
                   slopecol <- rep("black",2)
-                  pval <- 2 * pt(abs(slope(o.seg1)$x[,3]),o.seg1$df.residual,lower.tail = FALSE)
-                  pval <- p.adjust(pval,method="fdr")
-                  slopecol[pval < 0.05 & slope(o.seg1)$x[,1] > 0] <- "green"
-                  slopecol[pval < 0.05 & slope(o.seg1)$x[,1] < 0] <- "red"
+                  for (j in 1:2) {
+                        if (slope(o.seg1)$x[j,4] * slope(o.seg1)$x[j,5] > 0) {
+                              if (slope(o.seg1)$x[j,4] > 0) {
+                                    slopecol[j] <- "green"
+                              } else {
+                                    slopecol[j] <- "red"
+                              }
+                        }
+                  }
                   if (removeconstant) {
                         slopecol <- slopecol[slopecol!="black"]
                   }
@@ -94,7 +99,7 @@ pseudotimepattern <- function(expr,pseudotime,simplify=TRUE,removeconstant=FALSE
                   } else {
                         if (plot) {
                               plot(x,y,pch=20,main=transgene[i])
-                              plot(o.seg1,add=True,link=False,lwd=3,col=slopecol,rug=FALSE)
+                              plot(o.seg1,add=T,link=F,lwd=3,col=slopecol,rug=F)
                               lines(o.seg1,col="blue",pch=19,bottom=FALSE,lwd=2)
                         }                  
                         pattern[i,1] <- paste0(slopecol,collapse = "_")

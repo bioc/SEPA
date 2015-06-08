@@ -177,20 +177,14 @@ shinyServer(function(input, output,session) {
                   isolate({
                         tmptime <- Maindata$Truetimedata[,2]
                         names(tmptime) <- Maindata$Truetimedata[,1]                        
-                        truetime <- factor(tmptime,levels=unique(tmptime))
+                        truetime <- factor(tmptime)
                         
                         tmppattern <- rep("tmp",nrow(Maindata$Truetimeexpr))
                         withProgress(message = 'Calculation in Progress...', {                                  
                               for (i in 1:nrow(Maindata$Truetimeexpr)) {
                                     e <- Maindata$Truetimeexpr[i,]
                                     ttestpval <- sapply(1:(length(levels(truetime))-1), function(i) {
-                                          e1 <- e[truetime==levels(truetime)[i]]
-                                          e2 <- e[truetime==levels(truetime)[i+1]]
-                                          if (length(unique(e1))==1 && length(unique(e2))==1) {
-                                                1
-                                          } else {
-                                                sign(mean(e1)-mean(e2))*t.test(e1,e2)$p.value                  
-                                          }                                          
+                                          sign(mean(e[truetime==levels(truetime)[i]])-mean(e[truetime==levels(truetime)[i+1]]))*t.test(e[truetime==levels(truetime)[i]],e[truetime==levels(truetime)[i+1]])$p.value            
                                     })      
                                     ttestpval <- sign(ttestpval) * p.adjust(abs(ttestpval),method="fdr")
                                     pattern <- rep("constant",length(levels(truetime))-1)
@@ -293,43 +287,25 @@ shinyServer(function(input, output,session) {
                               mean(e[truetime==levels(truetime)[i]])
                         })
                   }))           
-                  
-                  p1 <- ggplot(data=geneexpr, aes(x=Var2, y=Var1)) + geom_tile(aes(fill = value)) + scale_fill_gradient2(low = "blue",high = "red",mid="white") +
-                        geom_vline(xintercept = cumsum(table(timeinfo[,2])[unique(timeinfo[,2])])[-length(unique(timeinfo[,2]))]+0.5) + theme_bw()
-                  
-                  p2 <- ggplot(mtcars, aes(mpg, drat)) + geom_line(colour = "red") + theme_bw() %+replace% 
-                        theme(panel.background = element_rect(fill = NA))
-                  
-                  leng <- ggplotGrob(p1 + theme(legend.position="bottom"))$grobs
-                  legend <- leng[[which(sapply(leng, function(x) x$name) == "guide-box")]]
-                  lheight <- sum(legend$height)
-                  p1 <- p1 + theme(legend.position="none")
-                  
-                  g1 <- ggplot_gtable(ggplot_build(p1))
-                  g2 <- ggplot_gtable(ggplot_build(p2))
-                  
-                  pp <- c(subset(g1$layout, name == "panel", se = t:r))
-                  g <- gtable_add_grob(g1, g2$grobs[[which(g2$layout$name == "panel")]], pp$t, 
-                                       pp$l, pp$b, pp$l)
-                  
-                  ia <- which(g2$layout$name == "axis-l")
-                  ga <- g2$grobs[[ia]]
-                  ax <- ga$children[[2]]
-                  ax$widths <- rev(ax$widths)
-                  ax$grobs <- rev(ax$grobs)
-                  ax$grobs[[1]]$x <- ax$grobs[[1]]$x - unit(1, "npc") + unit(0.15, "cm")
-                  g <- gtable_add_cols(g, g2$widths[g2$layout[ia, ]$l], length(g$widths) - 1)
-                  g <- gtable_add_grob(g, ax, pp$t, length(g$widths) -1 , pp$b)
-                  grid.arrange(g,legend,heights = unit.c(unit(1, "npc") - lheight, lheight))
-                  
-                  
-                  
-                  
-                  
-                  
-                  
-                  
-                  
+                  ggplot(data = tmp, aes(x=time, y=expmean, colour=Gene)) +
+                        geom_line(aes(group=Gene)) +
+                        geom_point(size=4) +             
+                        xlab("Experiment Time") +
+                        ylab("Expression Values") +
+                        theme(axis.line = element_line(colour = "black"),
+                              panel.grid.major = element_blank(),
+                              panel.grid.minor = element_blank(),
+                              panel.border = element_blank(),
+                              panel.background = element_blank(),
+                              axis.text.x = element_text(size=17,color='black'),
+                              axis.text.y = element_text(size=17,color='black'),
+                              axis.title.x = element_text(size=20,vjust=-1),
+                              axis.title.y = element_text(size=20,vjust=1),
+                              strip.text.y = element_text(size=17,color='black'),
+                              legend.text = element_text(size=15),
+                              legend.title = element_text(size=15),
+                              legend.position = "right"                              
+                        )
             }
             
       })
@@ -338,7 +314,7 @@ shinyServer(function(input, output,session) {
             filename = function() { "Pattern.pdf" },
             content = function(file) {
                   if (!is.null(Maindata$Truetimedata) && !is.null(input$Truetimeselectgene)) {
-                        png(file,width=14,height=7)
+                        pdf(file,width=14,height=7)
                         tmptime <- Maindata$Truetimedata[,2]
                         names(tmptime) <- Maindata$Truetimedata[,1]                        
                         truetime <- factor(tmptime)
@@ -349,34 +325,26 @@ shinyServer(function(input, output,session) {
                                     mean(e[truetime==levels(truetime)[i]])
                               })
                         }))           
-                        
-                              p1 <- ggplot(data=geneexpr, aes(x=Var2, y=Var1)) + geom_tile(aes(fill = value)) + scale_fill_gradient2(low = "blue",high = "red",mid="white") +
-                              geom_vline(xintercept = cumsum(table(timeinfo[,2])[unique(timeinfo[,2])])[-length(unique(timeinfo[,2]))]+0.5) + theme_bw()
-                        
-                        p2 <- ggplot(mtcars, aes(mpg, drat)) + geom_line(colour = "red") + theme_bw() %+replace% 
-                              theme(panel.background = element_rect(fill = NA))
-                        
-                        leng <- ggplotGrob(p1 + theme(legend.position="bottom"))$grobs
-                        legend <- leng[[which(sapply(leng, function(x) x$name) == "guide-box")]]
-                        lheight <- sum(legend$height)
-                        p1 <- p1 + theme(legend.position="none")
-                        
-                        g1 <- ggplot_gtable(ggplot_build(p1))
-                        g2 <- ggplot_gtable(ggplot_build(p2))
-                        
-                        pp <- c(subset(g1$layout, name == "panel", se = t:r))
-                        g <- gtable_add_grob(g1, g2$grobs[[which(g2$layout$name == "panel")]], pp$t, 
-                                             pp$l, pp$b, pp$l)
-                        
-                        ia <- which(g2$layout$name == "axis-l")
-                        ga <- g2$grobs[[ia]]
-                        ax <- ga$children[[2]]
-                        ax$widths <- rev(ax$widths)
-                        ax$grobs <- rev(ax$grobs)
-                        ax$grobs[[1]]$x <- ax$grobs[[1]]$x - unit(1, "npc") + unit(0.15, "cm")
-                        g <- gtable_add_cols(g, g2$widths[g2$layout[ia, ]$l], length(g$widths) - 1)
-                        g <- gtable_add_grob(g, ax, pp$t, length(g$widths) -1 , pp$b)
-                        grid.arrange(g,legend,heights = unit.c(unit(1, "npc") - lheight, lheight))
+                        tmp <- ggplot(data = tmp, aes(x=time, y=expmean, colour=Gene)) +
+                              geom_line(aes(group=Gene)) +
+                              geom_point(size=4) +             
+                              xlab("Experiment Time") +
+                              ylab("Expression Values") +
+                              theme(axis.line = element_line(colour = "black"),
+                                    panel.grid.major = element_blank(),
+                                    panel.grid.minor = element_blank(),
+                                    panel.border = element_blank(),
+                                    panel.background = element_blank(),
+                                    axis.text.x = element_text(size=17,color='black'),
+                                    axis.text.y = element_text(size=17,color='black'),
+                                    axis.title.x = element_text(size=20,vjust=-1),
+                                    axis.title.y = element_text(size=20,vjust=1),
+                                    strip.text.y = element_text(size=17,color='black'),                              
+                                    legend.text = element_text(size=15),
+                                    legend.title = element_text(size=15),
+                                    legend.position = "right"                                    
+                              )
+                        print(tmp)
                         dev.off()
                   }
             }
@@ -527,12 +495,17 @@ shinyServer(function(input, output,session) {
                                     }      
                                     if (o.seg1$psi[2] <= x[gap] || o.seg1$psi[2] >= x[length(x)-gap+1]) {
                                           notransgene <- c(notransgene,transgene[i])
-                                    } else {                                                                                    
-                                          slopecol <- rep("constant",2)
-                                          pval <- 2 * pt(abs(slope(o.seg1)$x[,3]),o.seg1$df.residual,lower.tail = F)
-                                          pval <- p.adjust(pval,method="fdr")
-                                          slopecol[pval < 0.05 & slope(o.seg1)$x[,1] > 0] <- "up"
-                                          slopecol[pval < 0.05 & slope(o.seg1)$x[,1] < 0] <- "down"                                          
+                                    } else {
+                                    slopecol <- rep("constant",2)
+                                    for (j in 1:2) {
+                                          if (slope(o.seg1)$x[j,4] * slope(o.seg1)$x[j,5] > 0) {
+                                                if (slope(o.seg1)$x[j,4] > 0) {
+                                                      slopecol[j] <- "up"
+                                                } else {
+                                                      slopecol[j] <- "down"
+                                                }
+                                          }
+                                    }
                                     if ((input$Pseudotimesimplify && slopecol[1] == slopecol[2]) || (input$Pseudotimeignoreconst && (slopecol[1]=="constant" || slopecol[2]=="constant"))) {
                                           notransgene <- c(notransgene,transgene[i])
                                     } else {                                    

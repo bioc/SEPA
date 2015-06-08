@@ -14,6 +14,7 @@
 \texttt{zji4@jhu.edu} \and
 Hongkai Ji\\[1em]Johns Hopkins University,\\ Baltimore, Maryland, USA\\
 \texttt{hji@jhsph.edu}}
+
 \begin{document}
 
 \maketitle
@@ -29,20 +30,15 @@ However, currently there is no available computational tool for such kind of dow
 
 SEPA comes with a powerful Graphical User Interface written in R shiny package. It allows users without prior programming knowledge to conveniently identify and explore the gene expression patterns. SEPA has an online user interface which is freely available at https://zhiji.shinyapps.io/SEPA/. However, the online user interface only allows one concurrent user so it is recommended that users launch SEPA on their own computers.
 
-The dataset used to demonstrate the main functions of SEPA is a subset of original gene expression profiles in the HSMMSingleCell package. It contains expressions of 518 genes in 271 for Human Skeletal Muscle Myoblast (HSMM) cells reported in [3]. The 518 genes are experimentally confirmed to be differentially expressed during the cell differentiation process and are used to construct the pseudo-time cell ordering in [3]. The pseudo-time cell orderings are also directly obtained from the HSMMSingleCell package.
-
 \section{Identify and Visualize Pattern for True Experiment Time Points}
 
 The function truetimepattern can be used to identify gene expression patterns given true experiment time points. The output of the function will be a named vector of patterns. Note that appropriate transformations on gene expression matrix (e.g. log2 transformation) should be done before calling this function.
 
-<<echo=FALSE>>=
+<<>>=
 library(SEPA)
 library(topGO)
 library(ggplot2)
 library(org.Hs.eg.db)
-@
-
-<<>>=
 data(HSMMdata)
 truepattern <- truetimepattern(HSMMdata,truetime)
 head(truepattern)

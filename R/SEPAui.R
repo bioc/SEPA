@@ -8,7 +8,6 @@
 #' However, it is highly recommended that the user interface be launched locally for faster running speed.
 #' 
 #' @export
-#' @return A user interface will be displayed in the web browser.
 #' @import shiny ggplot2 topGO reshape2 segmented
 #' @author Zhicheng Ji, Hongkai Ji <zji4@@zji4.edu>
 #' @examples

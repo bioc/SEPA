@@ -18,7 +18,7 @@
 #' pseudotimevisualize(pattern,"ENSG00000108821.9")
 #' pseudotimevisualize(pattern,c("ENSG00000108821.9","ENSG00000187193.8"))
 
-pseudotimevisualize <- function(pattern,gene,showtrue=FALSE) {      
+pseudotimevisualize <- function(pattern,gene,showtrue=F) {      
       findgene <- function(gene) {
             findres <- sapply(names(pattern$pattern), function(pat) {
                   if (grepl("_",pat)) {

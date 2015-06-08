@@ -4,14 +4,14 @@
 \alias{windowGOvisualize}
 \title{windowGOvisualize}
 \usage{
-windowGOvisualize(GOres, GOTerm = NULL, topterm = 2, mode = "Heatmap")
+windowGOvisualize(GOres, GOterm = NULL, topterm = 2, mode = "Heatmap")
 }
 \arguments{
 \item{GOres}{The direct output of windowGOanalysis function.}
 
-\item{GOTerm}{The name of GO term to be displayed. If NULL, top GO terms will be displayed instead}
+\item{GOterm}{The name of GO term to be displayed. If NULL, top GO terms will be displayed instead}
 
-\item{topterm}{The number of top GO terms to be displayed. This argument only works when GOTerm is NULL.}
+\item{topterm}{The number of top GO terms to be displayed. This argument only works when GOterm is NULL.}
 
 \item{mode}{To plot in heatmap or line graph. Either "Heatmap" or "Line".}
 }
